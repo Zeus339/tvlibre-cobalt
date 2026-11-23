@@ -123,7 +123,7 @@ const header = `/*! tvlibre-cobalt | ${built}
  * Generado automáticamente por build.mjs; no editar a mano. */\n`;
 const out = header +
   `try { window.__tvlibre = { built: ${JSON.stringify(built)}, ubo: ${JSON.stringify(uboTag)}, rules: ${active.length}, tizentube: ${JSON.stringify(ttVersion)} }; } catch (e) {}\n` +
-  `try {\n${ubo}\n} catch (e) { try { console.error('[tvlibre] uBO', e); } catch (_) {} }\n` +
+  `try {\n${ubo}\n  console.info('[tvlibre] uBlock Origin ${uboTag}: ${active.length} reglas activas; TizenTube ${ttVersion}');\n} catch (e) { try { console.error('[tvlibre] uBO', e); } catch (_) {} }\n` +
   `/* ---- TizenTube ---- */\n${tizentube}\n`;
 fs.mkdirSync('dist', { recursive: true });
 fs.writeFileSync('tvlibre.js', out); // en la raíz: la URL debe medir lo mismo que la original
