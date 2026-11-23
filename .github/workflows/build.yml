@@ -1,0 +1,34 @@
+name: build
+# Regenera dist/tvlibre.js cada día con las listas de uBlock Origin y el TizenTube más recientes.
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # cada 6 h (quick-fixes de uBO caduca cada 8 h)
+  workflow_dispatch:
+  push:
+    paths: ["build.mjs", ".github/workflows/build.yml"]
+permissions:
+  contents: write
+concurrency: build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node build.mjs
+      - name: Comprobar sintaxis
+        run: node -e "new Function(require('fs').readFileSync('tvlibre.js','utf8'))"
+      - name: Publicar si cambió
+        run: |
+          # build-info.json lleva la fecha: sólo se publica si cambió el contenido del script
+          if git diff --quiet -I '^/\*! tvlibre-cobalt' -I '__tvlibre = ' -- tvlibre.js; then
+            echo "Sin cambios"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add tvlibre.js dist
+          git commit -m "Actualizar reglas ($(date -u +%Y-%m-%d))"
+          git push
+          curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/tvlibre.js" || true

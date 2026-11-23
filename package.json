@@ -1,0 +1,8 @@
+{
+  "name": "tvlibre-cobalt",
+  "private": true,
+  "type": "module",
+  "description": "Script para TizenTube Cobalt: TizenTube + reglas de YouTube de uBlock Origin (las que usa Brave), regenerado a diario.",
+  "license": "GPL-3.0-only",
+  "scripts": { "build": "node build.mjs" }
+}
